@@ -33,7 +33,7 @@ class Package {
 		TYPE_THEME = "theme";
 
 	const INIT_PACKAGES = "packages",
-		INIT_MERGE_PATH = "merge_path",
+		INIT_MERGED_PATH = "merged_path",
 		INIT_SUCCESS = "success",
 		INIT_ERROR = "error";
 
@@ -344,6 +344,15 @@ class Package {
 				}
 			), (array) $options);
 
+		$error = function(\ErrorException $e) use ($options) {
+			if (!is_callable($handler = @$options[self::INIT_ERROR]))
+				return false;
+
+			call_user_func($handler, $e);
+
+			return true;
+		};
+
 
 		// Include libraries
 
@@ -351,18 +360,12 @@ class Package {
 			call_user_func_array("lowtone\\content\\req", @$options[self::INIT_PACKAGES] ?: array("lowtone"));
 		} catch (\ErrorException $e) {
 			
-			if (is_callable($error = @$options[self::INIT_ERROR]))
-				call_user_func($error, $e);
+			$error($e);
 
 			return false;
 		}
 
-		$hasLowtone = class_exists("lowtone\\Lowtone");
-
-		// Add merge path
-
-		if (($mergePath = @$options[self::INIT_MERGE_PATH]) && $hasLowtone)
-			Util::addMergedPath($mergePath);
+		do_action("lowtone_content_package_init", $options);
 
 		$result = true;
 
