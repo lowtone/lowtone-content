@@ -2,12 +2,8 @@
 /*
  * Plugin Name: Content
  * Plugin URI: http://wordpress.lowtone.nl
-<<<<<<< .mine
  * Plugin Type: plugin
  * Description: Manage plugins, themes and libraries.
-=======
- * Description: Manage plugins, themes and libraries and anything else in the wp-content folder.
->>>>>>> .r585
  * Version: 1.0
  * Author: Lowtone <info@lowtone.nl>
  * Author URI: http://lowtone.nl
