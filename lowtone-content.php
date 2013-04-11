@@ -20,12 +20,17 @@
 
 namespace lowtone\content {
 
-	if (!defined("LIB_DIR"))
-		define("LIB_DIR", WP_CONTENT_DIR . DIRECTORY_SEPARATOR . "libs");
-
 	include_once "repositories/repository.class.php";
 
 	include_once "packages/package.class.php";
+
+	use lowtone\content\packages\Package;
+
+	if (!defined("LIB_DIR"))
+		define("LIB_DIR", WP_CONTENT_DIR . DIRECTORY_SEPARATOR . Package::TYPE_LIB . "s");
+
+	if (!defined("LIB_URL"))
+		define("LIB_URL", content_url(Package::TYPE_LIB . "s"));
 
 	// Hooks
 
@@ -50,7 +55,7 @@ namespace lowtone\content {
 			if (empty($data["Name"]))
 				continue;
 
-			$data["type"] = packages\Package::TYPE_LIB;
+			$data["type"] = Package::TYPE_LIB;
 
 			$plugins[$lib] = $data;
 		}
@@ -69,30 +74,30 @@ namespace lowtone\content {
 		// var_dump($wp_list_table);
 
 		foreach ($plugins["all"] as &$plugin) {
-			if (packages\Package::TYPE_LIB !== @$plugin["type"])
+			if (Package::TYPE_LIB !== @$plugin["type"])
 				continue;
 
-			$plugins[packages\Package::TYPE_LIB] = $plugin;
+			$plugins[Package::TYPE_LIB] = $plugin;
 
-			@$totals[packages\Package::TYPE_LIB]++;
+			@$totals[Package::TYPE_LIB]++;
 		}
 
-		$totals["inactive"] -= @$totals[packages\Package::TYPE_LIB];
+		$totals["inactive"] -= @$totals[Package::TYPE_LIB];
 	}, 9999);
 
 	/*
 	 * Update libraries filter title.
 	 */
 	add_filter("views_plugins", function($views) {
-		if (!isset($views[packages\Package::TYPE_LIB]))
+		if (!isset($views[Package::TYPE_LIB]))
 			return $views;
 
 		global $totals, $status;
 
-		$views[packages\Package::TYPE_LIB] = vsprintf("<a href='%s' %s>%s</a>", array(
-				add_query_arg("plugin_status", packages\Package::TYPE_LIB, "plugins.php"),
-				packages\Package::TYPE_LIB == $status ? ' class="current"' : '',
-				sprintf(__('Libraries <span class="count">(%s)</span>', "lowtone_content"), number_format_i18n($totals[packages\Package::TYPE_LIB]))
+		$views[Package::TYPE_LIB] = vsprintf("<a href='%s' %s>%s</a>", array(
+				add_query_arg("plugin_status", Package::TYPE_LIB, "plugins.php"),
+				Package::TYPE_LIB == $status ? ' class="current"' : '',
+				sprintf(__('Libraries <span class="count">(%s)</span>', "lowtone_content"), number_format_i18n($totals[Package::TYPE_LIB]))
 			));
 
 		return $views;
@@ -102,7 +107,7 @@ namespace lowtone\content {
 	 * Remove activation links.
 	 */
 	add_filter("plugin_action_links", function($actions, $file, $data) {
-		if (packages\Package::TYPE_LIB !== @$data["type"])
+		if (Package::TYPE_LIB !== @$data["type"])
 			return $actions;
 
 		unset($actions["activate"]);
