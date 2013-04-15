@@ -140,6 +140,12 @@ namespace lowtone\content {
 
 	});
 
+	// Register textdomain
+	
+	add_action("plugins_loaded", function() {
+		load_plugin_textdomain("lowtone_content", false, basename(__DIR__) . "/assets/languages");
+	});
+
 	// Functions
 
 	function req($libs) {
