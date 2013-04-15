@@ -81,10 +81,9 @@ class Package {
 			throw new exceptions\DownloadException("Temporary file couldn't be created");
 
 		$response = wp_remote_get($src, array( 
-				'timeout' => 300, 
-				'stream' => true, 
-				'filename' => $file, 
-				"sslverify" => false 
+				"timeout" => 300, 
+				"stream" => true, 
+				"filename" => $file
 			));
 
 		if (is_wp_error($response)) {

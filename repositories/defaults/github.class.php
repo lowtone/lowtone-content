@@ -22,13 +22,8 @@ class GitHub extends Repository {
 		if (!preg_match(self::GITHUB_USER_URL_PATTERN, $url, $matches))
 			return false;
 
-		/*
-		 * @todo Curl fails to verify the SSL certificate even with an updated 
-		 * certificate file.
-		 */
-
 		$get = function($url) {
-			$result = wp_remote_get($url, array("sslverify" => false));
+			$result = wp_remote_get($url);
 			
 			if ("" === ($body = wp_remote_retrieve_body($result)))
 				return false;
@@ -41,7 +36,7 @@ class GitHub extends Repository {
 		if (!is_array($result = $get($reposUrl)))
 			return false;
 
-		$find = str_replace("\\", "-", $package);
+		$find = str_replace("\\", "-", $package
 
 		foreach ($result as $repository) {
 			if (!is_object($repository))
