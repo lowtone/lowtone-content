@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Content\n"
-"POT-Creation-Date: 2013-04-15 15:05+0100\n"
-"PO-Revision-Date: 2013-04-15 15:11+0100\n"
+"POT-Creation-Date: 2013-04-17 13:20+0100\n"
+"PO-Revision-Date: 2013-04-17 13:20+0100\n"
 "Last-Translator: Paul van der Meijs <info@lowtone.nl>\n"
 "Language-Team: Lowtone <info@lowtone.nl>\n"
 "Language: Dutch\n"
@@ -15,7 +15,15 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ../..\n"
 
-#: ../../lowtone-content.php:111
+#: ../../lowtone-content.php:54
+msgid ""
+"To list libraries WordPress version <strong>3.5 or greater</strong> is "
+"required."
+msgstr ""
+"Om een overzicht van bibliotheken weer te geven WordPress versie <strong>3.5 "
+"of hoger</strong> is vereist."
+
+#: ../../lowtone-content.php:128
 #, php-format
 msgid "Libraries <span class=\"count\">(%s)</span>"
 msgstr "Bibliotheken <span class=\"count\">(%s)</span>"

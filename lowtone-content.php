@@ -20,6 +20,8 @@
 
 namespace lowtone\content {
 
+	include_once ABSPATH . "wp-admin/includes/plugin.php";
+
 	include_once "repositories/repository.class.php";
 
 	include_once "packages/package.class.php";
@@ -32,119 +34,136 @@ namespace lowtone\content {
 	if (!defined("LIB_URL"))
 		define("LIB_URL", content_url(Package::TYPE_LIB . "s"));
 
-	// Hooks
-	
-	add_action("admin_init", function() {
-		wp_enqueue_style("lowtone_content", plugins_url("/assets/styles/admin.css", __FILE__));
-	});
-	 
-	add_action("load-plugins.php", function() {
+	// Add plugin functionality when activated.
 
-		/*
-		 * Add libraries to the list of plugins.
-		 */
-		add_filter("all_plugins", function($plugins) {
-			if (false === ($libs = glob(LIB_DIR . DIRECTORY_SEPARATOR . "*")))
+	if (is_plugin_active("lowtone-content/lowtone-content.php")) {
+
+		// Hooks
+	
+		add_action("admin_init", function() {
+			wp_enqueue_style("lowtone_content", plugins_url("/assets/styles/admin.css", __FILE__));
+		});
+		 
+		add_action("load-plugins.php", function() {
+
+			// Check WordPress version
+
+			if (true !== version_compare(get_bloginfo("version"), "3.5", ">=")) {
+				
+				add_action("pre_current_active_plugins", function() {
+					echo '<div class="error"><p>' . __('To list libraries WordPress version <strong>3.5 or greater</strong> is required.', "lowtone_content") . '</p></div>';
+				});
+
+				return false;
+			}
+
+			/*
+			 * Add libraries to the list of plugins.
+			 */
+			add_filter("all_plugins", function($plugins) {
+				if (false === ($libs = glob(LIB_DIR . DIRECTORY_SEPARATOR . "*")))
+					return $plugins;
+
+				foreach ($libs as $path) {
+					if (is_dir($path))
+						$path .= "/" . basename($path) . ".php";
+
+					$lib = substr($path, strlen(LIB_DIR) + 1);
+
+					if (!is_readable($path))
+						continue;
+
+					$data = get_plugin_data($path, false, false );
+
+					if (empty($data["Name"]))
+						continue;
+
+					$data["type"] = Package::TYPE_LIB;
+
+					$plugins[$lib] = $data;
+				}
+
+				uasort($plugins, "_sort_uname_callback");
+
 				return $plugins;
+			}, 9999);
 
-			foreach ($libs as $path) {
-				if (is_dir($path))
-					$path .= "/" . basename($path) . ".php";
+			/*
+			 * Update totals.
+			 */
+			add_action("pre_current_active_plugins", function($active) {
+				global $wp_list_table, $plugins, $totals;
 
-				$lib = substr($path, strlen(LIB_DIR) + 1);
+				// var_dump($wp_list_table);
 
-				if (!is_readable($path))
-					continue;
+				foreach ($plugins["all"] as &$plugin) {
+					if (Package::TYPE_LIB !== @$plugin["type"])
+						continue;
 
-				$data = get_plugin_data($path, false, false );
+					$plugins[Package::TYPE_LIB] = $plugin;
 
-				if (empty($data["Name"]))
-					continue;
+					@$totals[Package::TYPE_LIB]++;
+				}
 
-				$data["type"] = Package::TYPE_LIB;
-
-				$plugins[$lib] = $data;
-			}
-
-			uasort($plugins, "_sort_uname_callback");
-
-			return $plugins;
-		}, 9999);
-
-		/*
-		 * Update totals.
-		 */
-		add_action("pre_current_active_plugins", function($active) {
-			global $wp_list_table, $plugins, $totals;
-
-			// var_dump($wp_list_table);
-
-			foreach ($plugins["all"] as &$plugin) {
-				if (Package::TYPE_LIB !== @$plugin["type"])
-					continue;
-
-				$plugins[Package::TYPE_LIB] = $plugin;
-
-				@$totals[Package::TYPE_LIB]++;
-			}
-
-			$totals["inactive"] -= @$totals[Package::TYPE_LIB];
+				$totals["inactive"] -= @$totals[Package::TYPE_LIB];
 
 
-			include_once "packages/listtables/plugins.class.php";
+				include_once "packages/listtables/plugins.class.php";
 
-			packages\listtables\Plugins::__switch();
-		}, 9999);
+				packages\listtables\Plugins::__switch();
+			}, 9999);
 
-		/*
-		 * Update libraries filter title.
-		 */
-		add_filter("views_plugins", function($views) {
-			if (!isset($views[Package::TYPE_LIB]))
+			/*
+			 * Update libraries filter title.
+			 */
+			add_filter("views_plugins", function($views) {
+				if (!isset($views[Package::TYPE_LIB]))
+					return $views;
+
+				global $totals, $status;
+
+				$views[Package::TYPE_LIB] = vsprintf("<a href='%s' %s>%s</a>", array(
+						add_query_arg("plugin_status", Package::TYPE_LIB, "plugins.php"),
+						Package::TYPE_LIB == $status ? ' class="current"' : '',
+						sprintf(__('Libraries <span class="count">(%s)</span>', "lowtone_content"), number_format_i18n($totals[Package::TYPE_LIB]))
+					));
+
 				return $views;
+			}, 9999);
 
-			global $totals, $status;
+			add_filter("list_table_plugins_row_class", function($class, $data) {
+				if (Package::TYPE_LIB === @$data["type"]) {
+					$class = preg_replace("/(in)?active/", "", $class);
 
-			$views[Package::TYPE_LIB] = vsprintf("<a href='%s' %s>%s</a>", array(
-					add_query_arg("plugin_status", Package::TYPE_LIB, "plugins.php"),
-					Package::TYPE_LIB == $status ? ' class="current"' : '',
-					sprintf(__('Libraries <span class="count">(%s)</span>', "lowtone_content"), number_format_i18n($totals[Package::TYPE_LIB]))
-				));
+					$class .= " library";
 
-			return $views;
-		}, 9999);
+					$class = trim($class);
+				}
 
-		add_filter("list_table_plugins_row_class", function($class, $data) {
-			if (Package::TYPE_LIB === @$data["type"]) {
-				$class = preg_replace("/(in)?active/", "", $class);
+				return $class;
+			}, 9999, 2);
 
-				$class .= " library";
+			/*
+			 * Remove activation links.
+			 */
+			add_filter("plugin_action_links", function($actions, $file, $data) {
+				if (Package::TYPE_LIB !== @$data["type"])
+					return $actions;
 
-				$class = trim($class);
-			}
+				unset($actions["activate"]);
 
-			return $class;
-		}, 9999, 2);
-
-		/*
-		 * Remove activation links.
-		 */
-		add_filter("plugin_action_links", function($actions, $file, $data) {
-			if (Package::TYPE_LIB !== @$data["type"])
 				return $actions;
+			}, 9999, 3);
 
-			unset($actions["activate"]);
+		});
 
-			return $actions;
-		}, 9999, 3);
-
-	});
-
-	// Register textdomain
-	
-	add_action("plugins_loaded", function() {
-		load_plugin_textdomain("lowtone_content", false, basename(__DIR__) . "/assets/languages");
-	});
+		// Register textdomain
+		
+		add_action("plugins_loaded", function() {
+			load_plugin_textdomain("lowtone_content", false, basename(__DIR__) . "/assets/languages");
+		});
+		
+	}
 
 	// Functions
 
