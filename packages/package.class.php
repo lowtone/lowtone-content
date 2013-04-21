@@ -34,6 +34,9 @@ class Package {
 
 	const INIT_PACKAGES = "packages",
 		INIT_MERGED_PATH = "merged_path",
+		INIT_ACTIVATE = "activate",
+		INIT_DEACTIVATE = "deactivate",
+		INIT_UNINSTALL = "uninstall",
 		INIT_SUCCESS = "success",
 		INIT_ERROR = "error";
 
@@ -338,8 +341,7 @@ class Package {
 					$message = sprintf("%s (%s)", $message, $e->getMessage());
 
 					trigger_error($message, E_USER_ERROR);
-					var_dump($message);
-					flush();
+					
 				}
 			), (array) $options);
 
@@ -356,13 +358,47 @@ class Package {
 		// Include libraries
 
 		try {
-			call_user_func_array("lowtone\\content\\req", @$options[self::INIT_PACKAGES] ?: array("lowtone"));
+
+			if (isset($options[self::INIT_PACKAGES]))
+				call_user_func_array("lowtone\\content\\req", $options[self::INIT_PACKAGES] ?: array());
+
 		} catch (\ErrorException $e) {
 			
 			$error($e);
 
 			return false;
 		}
+
+		$__caller;
+
+		$caller = function() use (&$__caller) {
+			if (isset($__caller))
+				return $__caller;
+
+			foreach (debug_backtrace() as $trace) {
+				if (__FILE__ === $trace["file"])
+					continue;
+				
+				return ($__caller = $trace["file"]);
+			}
+
+			return false;
+		};
+
+		// Activation
+		
+		if (is_callable($activate = @$options[self::INIT_ACTIVATE]) && false !== $caller()) 
+			register_activation_hook($caller(), $activate);
+
+		// Deactivation
+		
+		if (is_callable($deactivate = @$options[self::INIT_DEACTIVATE]) && false !== $caller()) 
+			register_deactivation_hook($caller(), $deactivate);
+
+		// Uninstall
+		
+		if (is_callable($uninstall = @$options[self::INIT_UNINSTALL]) && false !== $caller()) 
+			register_uninstall_hook($caller(), $uninstall);
 
 		do_action("lowtone_content_package_init", $options);
 

@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Content\n"
+"POT-Creation-Date: 2013-04-17 13:20+0100\n"
+"PO-Revision-Date: 2013-04-17 13:20+0100\n"
+"Last-Translator: Paul van der Meijs <info@lowtone.nl>\n"
+"Language-Team: Lowtone <info@lowtone.nl>\n"
+"Language: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ../..\n"
+
+#: ../../lowtone-content.php:54
+msgid ""
+"To list libraries WordPress version <strong>3.5 or greater</strong> is "
+"required."
+msgstr ""
+"Om een overzicht van bibliotheken weer te geven WordPress versie <strong>3.5 "
+"of hoger</strong> is vereist."
+
+#: ../../lowtone-content.php:128
+#, php-format
+msgid "Libraries <span class=\"count\">(%s)</span>"
+msgstr "Bibliotheken <span class=\"count\">(%s)</span>"
+
+#: ../../packages/listtables/plugins.class.php:48
+msgid "Inactive:"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:48
+#, php-format
+msgid "Requires <code>%s</code> in <code>wp-config.php</code>."
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:61
+msgid "Network Deactivate"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:64
+msgid "Network Activate"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:66
+#: ../../packages/listtables/plugins.class.php:75
+msgid "Delete"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:70
+msgid "Deactivate"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:72
+msgid "Activate"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:80
+msgid "Edit"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:92
+#, php-format
+msgid "Select %s"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:131
+#, php-format
+msgid "Version %s"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:136
+#, php-format
+msgid "By %s"
+msgstr ""
+
+#: ../../packages/listtables/plugins.class.php:139
+msgid "Visit plugin site"
+msgstr ""
