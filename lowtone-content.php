@@ -89,48 +89,18 @@ namespace lowtone\content {
 			}, 9999);
 
 			/*
-			 * Update totals.
+			 * Replace list table
 			 */
 			add_action("pre_current_active_plugins", function($active) {
-				global $wp_list_table, $plugins, $totals;
-
-				// var_dump($wp_list_table);
-
-				foreach ($plugins["all"] as &$plugin) {
-					if (Package::TYPE_LIB !== @$plugin["type"])
-						continue;
-
-					$plugins[Package::TYPE_LIB] = $plugin;
-
-					@$totals[Package::TYPE_LIB]++;
-				}
-
-				$totals["inactive"] -= @$totals[Package::TYPE_LIB];
-
-
 				include_once "packages/listtables/plugins.class.php";
 
 				packages\listtables\Plugins::__switch();
+
 			}, 9999);
 
 			/*
-			 * Update libraries filter title.
+			 * Add library class
 			 */
-			add_filter("views_plugins", function($views) {
-				if (!isset($views[Package::TYPE_LIB]))
-					return $views;
-
-				global $totals, $status;
-
-				$views[Package::TYPE_LIB] = vsprintf("<a href='%s' %s>%s</a>", array(
-						add_query_arg("plugin_status", Package::TYPE_LIB, "plugins.php"),
-						Package::TYPE_LIB == $status ? ' class="current"' : '',
-						sprintf(__('Libraries <span class="count">(%s)</span>', "lowtone_content"), number_format_i18n($totals[Package::TYPE_LIB]))
-					));
-
-				return $views;
-			}, 9999);
-
 			add_filter("list_table_plugins_row_class", function($class, $data) {
 				if (Package::TYPE_LIB === @$data["type"]) {
 					$class = preg_replace("/(in)?active/", "", $class);
