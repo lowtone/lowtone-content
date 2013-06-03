@@ -360,7 +360,7 @@ class Package {
 		try {
 
 			if (isset($options[self::INIT_PACKAGES]))
-				call_user_func_array("lowtone\\content\\req", $options[self::INIT_PACKAGES] ?: array());
+				call_user_func_array("lowtone\\content\\req", (array) $options[self::INIT_PACKAGES] ?: array());
 
 		} catch (\ErrorException $e) {
 			
