@@ -36,7 +36,7 @@ class GitHub extends Repository {
 		if (!is_array($result = $get($reposUrl)))
 			return false;
 
-		$find = str_replace("\\", "-", $package
+		$find = str_replace("\\", "-", $package);
 
 		foreach ($result as $repository) {
 			if (!is_object($repository))
