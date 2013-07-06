@@ -190,6 +190,20 @@ class Package {
 			return false;
 		};
 
+		$onActivation = function() {
+			foreach (debug_backtrace() as $step) {
+				if (!("activate_plugin" == $step["function"] || "plugin_sandbox_scrape" == $step["function"]))
+					continue;
+
+				if (isset($step["class"]))
+					continue;
+
+				return true;
+			}
+			
+			return false;
+		};
+
 		if (false === ($path = $incl())) {
 
 			// Try install
@@ -197,11 +211,13 @@ class Package {
 			try {
 
 				$src = $this->search();
+
 				$file = $this->fetch($src);
+
 				$this->install($file);
 
 			} catch (\Exception $e) {
-
+				
 			}
 
 			// Last try
